@@ -2,25 +2,33 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Plus, 
   Play, 
-  ChevronRight, 
+  Plus, 
+  Clock,
   Dumbbell,
-  Calendar,
-  TrendingUp,
-  Clock
+  ListChecks
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
+import { RoutinePicker } from '@/components/RoutinePicker';
 import { useRoutines, useActiveWorkout, useSessions, usePlannedWorkouts } from '@/hooks/useWorkoutData';
-import { format, isToday, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { Routine } from '@/types/workout';
 
 export default function Home() {
   const navigate = useNavigate();
   const { routines, loading: routinesLoading } = useRoutines();
-  const { start } = useActiveWorkout();
-  const { sessions, loading: sessionsLoading } = useSessions();
+  const { activeWorkout, start, startFreeWorkout } = useActiveWorkout();
+  const { sessions } = useSessions();
   const { plannedWorkouts } = usePlannedWorkouts();
+  
+  const [showRoutinePicker, setShowRoutinePicker] = useState(false);
+  
+  // Check for existing active workout
+  if (activeWorkout) {
+    navigate('/workout');
+    return null;
+  }
   
   // Get today's planned workout
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -34,34 +42,27 @@ export default function Home() {
     const sessionDate = new Date(s.startedAt);
     return sessionDate >= weekStart && sessionDate <= weekEnd && s.status === 'completed';
   });
-  
-  // Get recent sessions
-  const recentSessions = sessions
-    .filter(s => s.status === 'completed')
-    .slice(0, 3);
 
-  const handleStartRoutine = async (routineId: string) => {
-    const routine = routines.find(r => r.id === routineId);
-    if (routine) {
-      await start(routine);
-      navigate('/workout');
-    }
+  const handleStartRoutine = async (routine: Routine) => {
+    setShowRoutinePicker(false);
+    await start(routine);
+    navigate('/workout');
   };
 
-  const handleQuickStart = () => {
-    if (todaysRoutine) {
-      handleStartRoutine(todaysRoutine.id);
-    } else if (routines.length > 0) {
-      handleStartRoutine(routines[0].id);
-    } else {
-      navigate('/routines/new');
-    }
+  const handleStartFreeWorkout = async () => {
+    await startFreeWorkout();
+    navigate('/workout');
   };
 
   const formatDuration = (start: number, end?: number) => {
     const duration = ((end || Date.now()) - start) / 1000 / 60;
     return `${Math.round(duration)} min`;
   };
+
+  // Recent sessions for display
+  const recentSessions = sessions
+    .filter(s => s.status === 'completed')
+    .slice(0, 3);
 
   return (
     <Layout>
@@ -74,154 +75,104 @@ export default function Home() {
           </p>
         </div>
         
-        {/* Quick start card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-primary p-6"
-        >
-          <div className="relative z-10">
-            {todaysRoutine ? (
-              <>
-                <p className="text-primary-foreground/80 text-sm font-medium mb-1">Today's Workout</p>
-                <h2 className="text-2xl font-bold text-primary-foreground mb-4">{todaysRoutine.name}</h2>
-              </>
-            ) : (
-              <>
-                <p className="text-primary-foreground/80 text-sm font-medium mb-1">Ready to train?</p>
-                <h2 className="text-2xl font-bold text-primary-foreground mb-4">
-                  {routines.length > 0 ? 'Start a workout' : 'Create your first routine'}
-                </h2>
-              </>
-            )}
-            
-            <Button
-              size="lg"
-              variant="secondary"
-              className="tap-target font-semibold"
-              onClick={handleQuickStart}
-            >
-              <Play className="w-5 h-5 mr-2 fill-current" />
-              {routines.length > 0 ? 'Start Now' : 'Create Routine'}
-            </Button>
-          </div>
-          
-          {/* Decorative element */}
-          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-primary-foreground/10" />
-          <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-primary-foreground/10" />
-        </motion.div>
-        
-        {/* Week stats */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* Today's planned workout */}
+        {todaysRoutine && (
           <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-primary p-6"
+          >
+            <div className="relative z-10">
+              <p className="text-primary-foreground/80 text-sm font-medium mb-1">Today's Workout</p>
+              <h2 className="text-2xl font-bold text-primary-foreground mb-4">{todaysRoutine.name}</h2>
+              
+              <Button
+                size="lg"
+                variant="secondary"
+                className="tap-target font-semibold"
+                onClick={() => handleStartRoutine(todaysRoutine)}
+              >
+                <Play className="w-5 h-5 mr-2 fill-current" />
+                Start Now
+              </Button>
+            </div>
+            
+            {/* Decorative element */}
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-primary-foreground/10" />
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-primary-foreground/10" />
+          </motion.div>
+        )}
+        
+        {/* Main CTAs */}
+        <div className="space-y-3">
+          <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-card rounded-2xl p-4"
+            onClick={() => setShowRoutinePicker(true)}
+            className="w-full bg-card rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
           >
-            <Dumbbell className="w-5 h-5 text-primary mb-2" />
-            <p className="display-md">{thisWeekSessions.length}</p>
-            <p className="text-xs text-muted-foreground">This week</p>
-          </motion.div>
+            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+              <ListChecks className="w-7 h-7 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-lg">Start from Routine</p>
+              <p className="text-sm text-muted-foreground">Use a saved workout template</p>
+            </div>
+            <Play className="w-5 h-5 text-muted-foreground" />
+          </motion.button>
           
-          <motion.div
+          <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="bg-card rounded-2xl p-4"
+            onClick={handleStartFreeWorkout}
+            className="w-full bg-card rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
           >
-            <Calendar className="w-5 h-5 text-primary mb-2" />
-            <p className="display-md">{sessions.filter(s => s.status === 'completed').length}</p>
-            <p className="text-xs text-muted-foreground">Total</p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-card rounded-2xl p-4"
-          >
-            <TrendingUp className="w-5 h-5 text-primary mb-2" />
-            <p className="display-md">{routines.length}</p>
-            <p className="text-xs text-muted-foreground">Routines</p>
-          </motion.div>
+            <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center">
+              <Plus className="w-7 h-7 text-success" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-lg">Start Free Workout</p>
+              <p className="text-sm text-muted-foreground">Build as you go</p>
+            </div>
+            <Play className="w-5 h-5 text-muted-foreground" />
+          </motion.button>
         </div>
         
-        {/* Routines section */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Your Routines</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-primary"
-              onClick={() => navigate('/routines/new')}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              New
-            </Button>
+        {/* Week stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-3 gap-3"
+        >
+          <div className="bg-card rounded-2xl p-4">
+            <Dumbbell className="w-5 h-5 text-primary mb-2" />
+            <p className="display-md">{thisWeekSessions.length}</p>
+            <p className="text-xs text-muted-foreground">This week</p>
           </div>
           
-          {routinesLoading ? (
-            <div className="space-y-3">
-              {[1, 2].map(i => (
-                <div key={i} className="bg-card rounded-2xl p-4 animate-pulse">
-                  <div className="h-5 bg-muted rounded w-1/2 mb-2" />
-                  <div className="h-4 bg-muted rounded w-1/3" />
-                </div>
-              ))}
-            </div>
-          ) : routines.length === 0 ? (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              onClick={() => navigate('/routines/new')}
-              className="w-full bg-card border-2 border-dashed border-border rounded-2xl p-6 text-center tap-target"
-            >
-              <Plus className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="font-medium">Create your first routine</p>
-              <p className="text-sm text-muted-foreground">Add exercises and start training</p>
-            </motion.button>
-          ) : (
-            <div className="space-y-3">
-              {routines.slice(0, 3).map((routine, index) => (
-                <motion.button
-                  key={routine.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  onClick={() => handleStartRoutine(routine.id)}
-                  className="w-full bg-card rounded-2xl p-4 flex items-center justify-between tap-target text-left"
-                >
-                  <div>
-                    <p className="font-semibold">{routine.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {routine.exercises.length} exercises
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Play className="w-5 h-5 text-primary" />
-                  </div>
-                </motion.button>
-              ))}
-              
-              {routines.length > 3 && (
-                <Button
-                  variant="ghost"
-                  className="w-full tap-target text-muted-foreground"
-                  onClick={() => navigate('/routines')}
-                >
-                  View all {routines.length} routines
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+          <div className="bg-card rounded-2xl p-4">
+            <ListChecks className="w-5 h-5 text-primary mb-2" />
+            <p className="display-md">{routines.length}</p>
+            <p className="text-xs text-muted-foreground">Routines</p>
+          </div>
+          
+          <div className="bg-card rounded-2xl p-4">
+            <Clock className="w-5 h-5 text-primary mb-2" />
+            <p className="display-md">{sessions.filter(s => s.status === 'completed').length}</p>
+            <p className="text-xs text-muted-foreground">Total</p>
+          </div>
+        </motion.div>
         
         {/* Recent activity */}
         {recentSessions.length > 0 && (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold">Recent Activity</h2>
               <Button
@@ -235,18 +186,15 @@ export default function Home() {
             </div>
             
             <div className="space-y-2">
-              {recentSessions.map((session, index) => {
+              {recentSessions.map((session) => {
                 const routine = routines.find(r => r.id === session.routineId);
                 return (
-                  <motion.div
+                  <div
                     key={session.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                     className="bg-card rounded-xl p-3 flex items-center justify-between"
                   >
                     <div>
-                      <p className="font-medium">{routine?.name || 'Workout'}</p>
+                      <p className="font-medium">{routine?.name || 'Free Workout'}</p>
                       <p className="text-sm text-muted-foreground">
                         {format(new Date(session.startedAt), 'MMM d, h:mm a')}
                       </p>
@@ -255,13 +203,39 @@ export default function Home() {
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">{formatDuration(session.startedAt, session.endedAt)}</span>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
+        )}
+        
+        {/* Quick access to routines */}
+        {routines.length === 0 && !routinesLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="bg-card border-2 border-dashed border-border rounded-2xl p-6 text-center"
+          >
+            <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+            <p className="font-medium mb-1">No routines yet</p>
+            <p className="text-sm text-muted-foreground mb-4">Create a routine to get started faster</p>
+            <Button onClick={() => navigate('/routines/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Routine
+            </Button>
+          </motion.div>
         )}
       </div>
+      
+      {/* Routine picker modal */}
+      <RoutinePicker
+        routines={routines}
+        isOpen={showRoutinePicker}
+        onClose={() => setShowRoutinePicker(false)}
+        onSelect={handleStartRoutine}
+      />
     </Layout>
   );
 }

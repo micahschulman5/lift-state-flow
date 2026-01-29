@@ -5,6 +5,7 @@ import {
   Routine,
   PlannedWorkout,
   WorkoutSession,
+  WorkoutExercise,
   SetEntry,
   AppSettings,
   ActiveWorkoutState,
@@ -292,16 +293,68 @@ export function useActiveWorkout() {
     };
     await db.saveSession(session);
 
+    // Convert routine exercises to workout exercises
+    const workoutExercises: WorkoutExercise[] = routine.exercises.map(ex => ({
+      ...ex,
+      addedDuringWorkout: false,
+    }));
+
     const state: ActiveWorkoutState = {
       session,
       routine,
+      workoutExercises,
       currentExerciseIndex: 0,
       currentSetIndex: 0,
       completedSets: [],
       isPaused: false,
+      isFreeWorkout: false,
     };
     save(state);
     return state;
+  };
+
+  const startFreeWorkout = async () => {
+    const session: WorkoutSession = {
+      id: uuidv4(),
+      startedAt: Date.now(),
+      status: 'active',
+    };
+    await db.saveSession(session);
+
+    const state: ActiveWorkoutState = {
+      session,
+      workoutExercises: [],
+      currentExerciseIndex: 0,
+      currentSetIndex: 0,
+      completedSets: [],
+      isPaused: false,
+      isFreeWorkout: true,
+    };
+    save(state);
+    return state;
+  };
+
+  const addExerciseToWorkout = (
+    exerciseId: string,
+    targets: { sets: number; reps?: number; duration?: number; rest: number }
+  ) => {
+    if (!activeWorkout) return null;
+
+    const newWorkoutExercise: WorkoutExercise = {
+      exerciseId,
+      targetSets: targets.sets,
+      targetReps: targets.reps,
+      targetDuration: targets.duration,
+      restBetweenSets: targets.rest,
+      addedDuringWorkout: true,
+    };
+
+    const updated = {
+      ...activeWorkout,
+      workoutExercises: [...activeWorkout.workoutExercises, newWorkoutExercise],
+    };
+    save(updated);
+    return updated;
   };
 
   const update = (updates: Partial<ActiveWorkoutState>) => {
@@ -348,7 +401,7 @@ export function useActiveWorkout() {
     save(null);
   };
 
-  return { activeWorkout, loading, start, update, completeSet, end, clear };
+  return { activeWorkout, loading, start, startFreeWorkout, addExerciseToWorkout, update, completeSet, end, clear };
 }
 
 // Analytics hook
