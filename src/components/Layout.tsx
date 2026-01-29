@@ -56,7 +56,7 @@ export function Layout({ children }: LayoutProps) {
                 </div>
                 <div>
                   <p className="font-semibold text-primary-foreground">Workout in progress</p>
-                  <p className="text-sm text-primary-foreground/80">{activeWorkout.routine.name}</p>
+                  <p className="text-sm text-primary-foreground/80">{activeWorkout.routine?.name || 'Free Workout'}</p>
                 </div>
               </div>
               <span className="text-primary-foreground font-medium">Resume →</span>
