@@ -239,7 +239,7 @@ export function useSettings() {
   const refresh = useCallback(async () => {
     setLoading(true);
     const data = await db.getSettings();
-    setSettings(data);
+    setSettings(data || db.DEFAULT_SETTINGS);
     setLoading(false);
   }, []);
 
