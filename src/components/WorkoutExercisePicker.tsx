@@ -108,71 +108,136 @@ export function WorkoutExercisePicker({
               />
             </div>
             <Button
-              variant={showFilters || hasActiveFilters ? 'default' : 'outline'}
+              variant={hasActiveFilters ? 'default' : 'outline'}
               size="icon"
-              onClick={() => setShowFilters(!showFilters)}
-              className="shrink-0"
+              onClick={() => setShowFilters(true)}
+              className="shrink-0 relative"
             >
               <Filter className="w-4 h-4" />
+              {hasActiveFilters && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
+              )}
             </Button>
           </div>
 
-          {/* Filters */}
+          {/* Active filter chips (inline preview) */}
+          {hasActiveFilters && (
+            <div className="px-4 pb-3 flex gap-2 items-center">
+              {muscleFilter && (
+                <button
+                  onClick={() => setMuscleFilter(null)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground"
+                >
+                  {muscleFilter}
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+              {equipmentFilter && (
+                <button
+                  onClick={() => setEquipmentFilter(null)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground"
+                >
+                  {equipmentFilter}
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+              <button
+                onClick={clearFilters}
+                className="text-xs text-muted-foreground underline"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+
+          {/* Filter Modal */}
           <AnimatePresence>
             {showFilters && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden pb-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col rounded-t-3xl"
+                onClick={() => setShowFilters(false)}
               >
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-2 px-4">Muscle Group</p>
-                    <div className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
-                      {muscleGroups.map(muscle => (
-                        <button
-                          key={muscle}
-                          onClick={() => setMuscleFilter(muscleFilter === muscle ? null : muscle)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize whitespace-nowrap shrink-0",
-                            muscleFilter === muscle
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-surface text-muted-foreground"
-                          )}
-                        >
-                          {muscle}
-                        </button>
-                      ))}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 20, opacity: 0 }}
+                  className="flex flex-col h-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Filter Modal Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h3 className="text-lg font-semibold">Filters</h3>
+                    <button onClick={() => setShowFilters(false)} className="tap-target p-2">
+                      <X className="w-5 h-5 text-muted-foreground" />
+                    </button>
+                  </div>
+
+                  {/* Filter Content - Scrollable */}
+                  <div className="flex-1 overflow-auto p-4 space-y-6">
+                    {/* Muscle Group */}
+                    <div>
+                      <p className="text-sm font-medium mb-3">Muscle Group</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {muscleGroups.map(muscle => (
+                          <button
+                            key={muscle}
+                            onClick={() => setMuscleFilter(muscleFilter === muscle ? null : muscle)}
+                            className={cn(
+                              "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
+                              muscleFilter === muscle
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-surface text-muted-foreground"
+                            )}
+                          >
+                            {muscle}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Equipment */}
+                    <div>
+                      <p className="text-sm font-medium mb-3">Equipment</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {equipmentTypes.map(equip => (
+                          <button
+                            key={equip}
+                            onClick={() => setEquipmentFilter(equipmentFilter === equip ? null : equip)}
+                            className={cn(
+                              "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
+                              equipmentFilter === equip
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-surface text-muted-foreground"
+                            )}
+                          >
+                            {equip}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-2 px-4">Equipment</p>
-                    <div className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
-                      {equipmentTypes.map(equip => (
-                        <button
-                          key={equip}
-                          onClick={() => setEquipmentFilter(equipmentFilter === equip ? null : equip)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize whitespace-nowrap shrink-0",
-                            equipmentFilter === equip
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-surface text-muted-foreground"
-                          )}
-                        >
-                          {equip}
-                        </button>
-                      ))}
-                    </div>
+
+                  {/* Filter Actions */}
+                  <div className="p-4 border-t border-border flex gap-3 pb-safe">
+                    <Button
+                      variant="outline"
+                      className="flex-1 tap-target"
+                      onClick={clearFilters}
+                      disabled={!hasActiveFilters}
+                    >
+                      Clear All
+                    </Button>
+                    <Button
+                      className="flex-1 tap-target"
+                      onClick={() => setShowFilters(false)}
+                    >
+                      Apply Filters
+                    </Button>
                   </div>
-                  {hasActiveFilters && (
-                    <div className="px-4">
-                      <Button variant="ghost" size="sm" onClick={clearFilters}>
-                        Clear filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
