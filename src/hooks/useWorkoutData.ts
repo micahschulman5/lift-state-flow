@@ -193,11 +193,22 @@ export function useSessions() {
     }
   };
 
+  const deleteSession = async (id: string) => {
+    // Delete all set entries for this session first
+    const entries = await db.getSetEntriesBySession(id);
+    for (const entry of entries) {
+      await db.deleteSetEntry(entry.id);
+    }
+    // Delete the session
+    await db.deleteSession(id);
+    await refresh();
+  };
+
   const getActiveSession = async () => {
     return db.getActiveSession();
   };
 
-  return { sessions, loading, refresh, getByMonth, startSession, endSession, getActiveSession };
+  return { sessions, loading, refresh, getByMonth, startSession, endSession, deleteSession, getActiveSession };
 }
 
 // Hook for set entries
@@ -224,11 +235,19 @@ export function useSetEntries() {
     return newEntry;
   };
 
+  const updateSetEntry = async (entry: SetEntry) => {
+    await db.saveSetEntry(entry);
+  };
+
+  const deleteSetEntry = async (id: string) => {
+    await db.deleteSetEntry(id);
+  };
+
   const getAll = async () => {
     return db.getAllSetEntries();
   };
 
-  return { getBySession, getByExercise, getLastSet, addSetEntry, getAll };
+  return { getBySession, getByExercise, getLastSet, addSetEntry, updateSetEntry, deleteSetEntry, getAll };
 }
 
 // Hook for settings
