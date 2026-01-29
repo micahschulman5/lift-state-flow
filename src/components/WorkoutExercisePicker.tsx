@@ -32,8 +32,8 @@ export function WorkoutExercisePicker({
 }: WorkoutExercisePickerProps) {
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [muscleFilter, setMuscleFilter] = useState<MuscleGroup | null>(null);
-  const [equipmentFilter, setEquipmentFilter] = useState<EquipmentType | null>(null);
+  const [muscleFilters, setMuscleFilters] = useState<MuscleGroup[]>([]);
+  const [equipmentFilters, setEquipmentFilters] = useState<EquipmentType[]>([]);
 
   const filteredExercises = useMemo(() => {
     let result = exercises;
@@ -43,26 +43,42 @@ export function WorkoutExercisePicker({
       result = result.filter(e => e.name.toLowerCase().includes(term));
     }
 
-    if (muscleFilter) {
+    if (muscleFilters.length > 0) {
       result = result.filter(e => 
-        e.primaryMuscles.some(m => m.muscle === muscleFilter) ||
-        e.secondaryMuscles.some(m => m.muscle === muscleFilter)
+        e.primaryMuscles.some(m => muscleFilters.includes(m.muscle)) ||
+        e.secondaryMuscles.some(m => muscleFilters.includes(m.muscle))
       );
     }
 
-    if (equipmentFilter) {
-      result = result.filter(e => e.equipment === equipmentFilter);
+    if (equipmentFilters.length > 0) {
+      result = result.filter(e => equipmentFilters.includes(e.equipment));
     }
 
     return result;
-  }, [exercises, search, muscleFilter, equipmentFilter]);
+  }, [exercises, search, muscleFilters, equipmentFilters]);
 
   const clearFilters = () => {
-    setMuscleFilter(null);
-    setEquipmentFilter(null);
+    setMuscleFilters([]);
+    setEquipmentFilters([]);
   };
 
-  const hasActiveFilters = muscleFilter || equipmentFilter;
+  const toggleMuscleFilter = (muscle: MuscleGroup) => {
+    setMuscleFilters(prev => 
+      prev.includes(muscle) 
+        ? prev.filter(m => m !== muscle)
+        : [...prev, muscle]
+    );
+  };
+
+  const toggleEquipmentFilter = (equip: EquipmentType) => {
+    setEquipmentFilters(prev => 
+      prev.includes(equip) 
+        ? prev.filter(e => e !== equip)
+        : [...prev, equip]
+    );
+  };
+
+  const hasActiveFilters = muscleFilters.length > 0 || equipmentFilters.length > 0;
 
   if (!isOpen) return null;
 
@@ -122,25 +138,27 @@ export function WorkoutExercisePicker({
 
           {/* Active filter chips (inline preview) */}
           {hasActiveFilters && (
-            <div className="px-4 pb-3 flex gap-2 items-center">
-              {muscleFilter && (
+            <div className="px-4 pb-3 flex flex-wrap gap-2 items-center">
+              {muscleFilters.map(muscle => (
                 <button
-                  onClick={() => setMuscleFilter(null)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground"
+                  key={muscle}
+                  onClick={() => toggleMuscleFilter(muscle)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground capitalize"
                 >
-                  {muscleFilter}
+                  {muscle}
                   <X className="w-3 h-3" />
                 </button>
-              )}
-              {equipmentFilter && (
+              ))}
+              {equipmentFilters.map(equip => (
                 <button
-                  onClick={() => setEquipmentFilter(null)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground"
+                  key={equip}
+                  onClick={() => toggleEquipmentFilter(equip)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground capitalize"
                 >
-                  {equipmentFilter}
+                  {equip}
                   <X className="w-3 h-3" />
                 </button>
-              )}
+              ))}
               <button
                 onClick={clearFilters}
                 className="text-xs text-muted-foreground underline"
@@ -179,15 +197,15 @@ export function WorkoutExercisePicker({
                   <div className="flex-1 overflow-auto p-4 space-y-6">
                     {/* Muscle Group */}
                     <div>
-                      <p className="text-sm font-medium mb-3">Muscle Group</p>
+                      <p className="text-sm font-medium mb-3">Muscle Group <span className="text-muted-foreground font-normal">(multi-select)</span></p>
                       <div className="grid grid-cols-3 gap-2">
                         {muscleGroups.map(muscle => (
                           <button
                             key={muscle}
-                            onClick={() => setMuscleFilter(muscleFilter === muscle ? null : muscle)}
+                            onClick={() => toggleMuscleFilter(muscle)}
                             className={cn(
                               "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
-                              muscleFilter === muscle
+                              muscleFilters.includes(muscle)
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-surface text-muted-foreground"
                             )}
@@ -200,15 +218,15 @@ export function WorkoutExercisePicker({
 
                     {/* Equipment */}
                     <div>
-                      <p className="text-sm font-medium mb-3">Equipment</p>
+                      <p className="text-sm font-medium mb-3">Equipment <span className="text-muted-foreground font-normal">(multi-select)</span></p>
                       <div className="grid grid-cols-2 gap-2">
                         {equipmentTypes.map(equip => (
                           <button
                             key={equip}
-                            onClick={() => setEquipmentFilter(equipmentFilter === equip ? null : equip)}
+                            onClick={() => toggleEquipmentFilter(equip)}
                             className={cn(
                               "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
-                              equipmentFilter === equip
+                              equipmentFilters.includes(equip)
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-surface text-muted-foreground"
                             )}
