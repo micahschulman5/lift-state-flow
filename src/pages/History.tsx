@@ -5,12 +5,14 @@ import {
   TrendingUp, 
   BarChart3,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
+import { SessionDetailModal } from '@/components/SessionDetailModal';
 import { useExercises, useSessions, useSetEntries, useRoutines } from '@/hooks/useWorkoutData';
-import { SetEntry, Exercise, MuscleGroup } from '@/types/workout';
+import { SetEntry, Exercise, MuscleGroup, WorkoutSession } from '@/types/workout';
 import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
 import { cn } from '@/lib/utils';
 import {
@@ -40,14 +42,18 @@ const MUSCLE_COLORS: Record<MuscleGroup, string> = {
 
 export default function History() {
   const { exercises } = useExercises();
-  const { sessions } = useSessions();
+  const { sessions, refresh: refreshSessions, deleteSession } = useSessions();
   const { routines } = useRoutines();
-  const { getAll, getByExercise } = useSetEntries();
+  const { getAll, getByExercise, getBySession, updateSetEntry, deleteSetEntry } = useSetEntries();
   
   const [allEntries, setAllEntries] = useState<SetEntry[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [exerciseHistory, setExerciseHistory] = useState<SetEntry[]>([]);
   const [showExerciseSelector, setShowExerciseSelector] = useState(false);
+  
+  // Session detail modal state
+  const [selectedSession, setSelectedSession] = useState<WorkoutSession | null>(null);
+  const [selectedSessionSets, setSelectedSessionSets] = useState<SetEntry[]>([]);
 
   // Load all entries
   useEffect(() => {
@@ -62,6 +68,43 @@ export default function History() {
       });
     }
   }, [selectedExercise]);
+
+  // Handle session click
+  const handleSessionClick = async (session: WorkoutSession) => {
+    const sets = await getBySession(session.id);
+    setSelectedSessionSets(sets);
+    setSelectedSession(session);
+  };
+
+  // Handle update set
+  const handleUpdateSet = async (entry: SetEntry) => {
+    await updateSetEntry(entry);
+    // Refresh the session sets
+    const sets = await getBySession(entry.sessionId);
+    setSelectedSessionSets(sets);
+    // Refresh all entries for charts
+    getAll().then(setAllEntries);
+  };
+
+  // Handle delete set
+  const handleDeleteSet = async (entryId: string) => {
+    await deleteSetEntry(entryId);
+    // Refresh the session sets
+    if (selectedSession) {
+      const sets = await getBySession(selectedSession.id);
+      setSelectedSessionSets(sets);
+    }
+    // Refresh all entries
+    getAll().then(setAllEntries);
+  };
+
+  // Handle delete session
+  const handleDeleteSession = async (sessionId: string) => {
+    await deleteSession(sessionId);
+    setSelectedSession(null);
+    // Refresh all entries
+    getAll().then(setAllEntries);
+  };
 
   // Calculate weekly muscle volume
   const weeklyMuscleVolume = useMemo(() => {
@@ -356,32 +399,49 @@ export default function History() {
                     : 0;
                   
                   return (
-                    <motion.div
+                    <motion.button
                       key={session.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03 }}
-                      className="bg-card rounded-xl p-4"
+                      className="w-full bg-card rounded-xl p-4 tap-target text-left border border-border hover:border-primary/50 transition-colors"
+                      onClick={() => handleSessionClick(session)}
                     >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-medium">{routine?.name || 'Workout'}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium">{routine?.name || 'Free Workout'}</p>
                           <p className="text-sm text-muted-foreground">
                             {format(new Date(session.startedAt), 'MMM d, yyyy • h:mm a')}
                           </p>
                         </div>
-                        <div className="text-right text-sm text-muted-foreground">
-                          <p>{sessionSets.length} sets</p>
-                          <p>{duration} min</p>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right text-sm text-muted-foreground">
+                            <p>{sessionSets.length} sets</p>
+                            <p>{duration} min</p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-muted-foreground" />
                         </div>
                       </div>
-                    </motion.div>
+                    </motion.button>
                   );
                 })}
             </div>
           )}
         </div>
       </div>
+      
+      {/* Session detail modal */}
+      <SessionDetailModal
+        session={selectedSession!}
+        sessionSets={selectedSessionSets}
+        exercises={exercises}
+        routineName={selectedSession ? routines.find(r => r.id === selectedSession.routineId)?.name : undefined}
+        isOpen={!!selectedSession}
+        onClose={() => setSelectedSession(null)}
+        onUpdateSet={handleUpdateSet}
+        onDeleteSet={handleDeleteSet}
+        onDeleteSession={handleDeleteSession}
+      />
     </Layout>
   );
 }
