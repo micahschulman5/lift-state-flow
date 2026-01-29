@@ -420,18 +420,18 @@ export default function RoutineForm() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden px-4 pb-3"
+                    className="overflow-hidden pb-3"
                   >
                     <div className="space-y-3">
                       <div>
-                        <p className="text-xs text-muted-foreground mb-2">Muscle Group</p>
-                        <div className="flex flex-wrap gap-1.5">
+                        <p className="text-xs text-muted-foreground mb-2 px-4">Muscle Group</p>
+                        <div className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
                           {muscleGroups.map(muscle => (
                             <button
                               key={muscle}
                               onClick={() => setMuscleFilter(muscleFilter === muscle ? null : muscle)}
                               className={cn(
-                                "px-2.5 py-1 rounded-full text-xs font-medium transition-colors capitalize",
+                                "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize whitespace-nowrap shrink-0",
                                 muscleFilter === muscle
                                   ? "bg-primary text-primary-foreground"
                                   : "bg-surface text-muted-foreground"
@@ -443,14 +443,14 @@ export default function RoutineForm() {
                         </div>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground mb-2">Equipment</p>
-                        <div className="flex flex-wrap gap-1.5">
+                        <p className="text-xs text-muted-foreground mb-2 px-4">Equipment</p>
+                        <div className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
                           {equipmentTypes.map(equip => (
                             <button
                               key={equip}
                               onClick={() => setEquipmentFilter(equipmentFilter === equip ? null : equip)}
                               className={cn(
-                                "px-2.5 py-1 rounded-full text-xs font-medium transition-colors capitalize",
+                                "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize whitespace-nowrap shrink-0",
                                 equipmentFilter === equip
                                   ? "bg-primary text-primary-foreground"
                                   : "bg-surface text-muted-foreground"
@@ -462,9 +462,11 @@ export default function RoutineForm() {
                         </div>
                       </div>
                       {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
-                          Clear filters
-                        </Button>
+                        <div className="px-4">
+                          <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            Clear filters
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </motion.div>
