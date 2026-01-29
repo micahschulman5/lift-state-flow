@@ -7,13 +7,16 @@ import {
   Bell, 
   BellOff,
   Clock,
-  Info
+  Info,
+  Scale,
+  Ruler
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Layout } from '@/components/Layout';
 import { NumberInput } from '@/components/NumberInput';
 import { useSettings } from '@/hooks/useWorkoutData';
+import { WeightUnit, DistanceUnit } from '@/types/workout';
 
 export default function Settings() {
   const { settings, loading, updateSettings } = useSettings();
@@ -130,11 +133,90 @@ export default function Settings() {
           </div>
         </motion.div>
         
-        {/* Notifications */}
+        {/* Units */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="bg-card rounded-2xl p-4 space-y-4"
+        >
+          <div className="flex items-center gap-3">
+            <Scale className="w-5 h-5 text-primary" />
+            <h2 className="font-semibold">Units</h2>
+          </div>
+          
+          {/* Weight Unit */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Scale className="w-5 h-5 text-muted-foreground" />
+              <div>
+                <p className="font-medium">Weight Unit</p>
+                <p className="text-sm text-muted-foreground">Display weights in lbs or kgs</p>
+              </div>
+            </div>
+            <div className="flex bg-muted rounded-lg p-1">
+              <button
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  settings.weightUnit === 'lbs' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => updateSettings({ weightUnit: 'lbs' as WeightUnit })}
+              >
+                lbs
+              </button>
+              <button
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  settings.weightUnit === 'kgs' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => updateSettings({ weightUnit: 'kgs' as WeightUnit })}
+              >
+                kgs
+              </button>
+            </div>
+          </div>
+          
+          {/* Distance Unit */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Ruler className="w-5 h-5 text-muted-foreground" />
+              <div>
+                <p className="font-medium">Distance Unit</p>
+                <p className="text-sm text-muted-foreground">For cardio exercises</p>
+              </div>
+            </div>
+            <div className="flex bg-muted rounded-lg p-1">
+              <button
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  settings.distanceUnit === 'miles' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => updateSettings({ distanceUnit: 'miles' as DistanceUnit })}
+              >
+                mi
+              </button>
+              <button
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  settings.distanceUnit === 'km' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => updateSettings({ distanceUnit: 'km' as DistanceUnit })}
+              >
+                km
+              </button>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Notifications */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="bg-card rounded-2xl p-4 space-y-4"
         >
           <div className="flex items-center gap-3">
@@ -237,7 +319,7 @@ export default function Settings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
           className="bg-card rounded-2xl p-4 space-y-4"
         >
           <div className="flex items-center gap-3">

@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
 import { SessionDetailModal } from '@/components/SessionDetailModal';
-import { useExercises, useSessions, useSetEntries, useRoutines } from '@/hooks/useWorkoutData';
+import { useExercises, useSessions, useSetEntries, useRoutines, useSettings } from '@/hooks/useWorkoutData';
 import { SetEntry, Exercise, MuscleGroup, WorkoutSession } from '@/types/workout';
 import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -44,6 +44,7 @@ export default function History() {
   const { exercises } = useExercises();
   const { sessions, refresh: refreshSessions, deleteSession } = useSessions();
   const { routines } = useRoutines();
+  const { settings } = useSettings();
   const { getAll, getByExercise, getBySession, updateSetEntry, deleteSetEntry } = useSetEntries();
   
   const [allEntries, setAllEntries] = useState<SetEntry[]>([]);
@@ -436,6 +437,7 @@ export default function History() {
         sessionSets={selectedSessionSets}
         exercises={exercises}
         routineName={selectedSession ? routines.find(r => r.id === selectedSession.routineId)?.name : undefined}
+        settings={settings}
         isOpen={!!selectedSession}
         onClose={() => setSelectedSession(null)}
         onUpdateSet={handleUpdateSet}

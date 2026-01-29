@@ -121,7 +121,7 @@ export function QuickExerciseForm({ isOpen, onClose, onSave }: QuickExerciseForm
             {/* Type toggle */}
             <div>
               <label className="text-sm text-muted-foreground mb-1.5 block">Type</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setType('reps')}
                   className={cn(
@@ -143,6 +143,20 @@ export function QuickExerciseForm({ isOpen, onClose, onSave }: QuickExerciseForm
                   )}
                 >
                   Time
+                </button>
+                <button
+                  onClick={() => {
+                    setType('cardio');
+                    setPrimaryMuscle('cardio');
+                  }}
+                  className={cn(
+                    "py-3 rounded-xl font-medium transition-colors tap-target",
+                    type === 'cardio'
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-surface text-muted-foreground"
+                  )}
+                >
+                  Cardio
                 </button>
               </div>
             </div>
