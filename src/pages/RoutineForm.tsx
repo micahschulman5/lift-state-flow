@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { NumberInput } from '@/components/NumberInput';
 import { useRoutines, useExercises, useSettings } from '@/hooks/useWorkoutData';
 import { RoutineExercise, Exercise, MuscleGroup, EquipmentType } from '@/types/workout';
 import { cn } from '@/lib/utils';
@@ -336,11 +337,10 @@ export default function RoutineForm() {
                         
                         <div>
                           <label className="text-xs text-muted-foreground mb-1 block">Rest Between Sets (sec)</label>
-                          <Input
-                            type="number"
-                            inputMode="numeric"
+                          <NumberInput
                             value={re.restBetweenSets}
-                            onChange={(e) => updateRoutineExercise(index, { restBetweenSets: parseInt(e.target.value) || 60 })}
+                            onValueChange={(next) => updateRoutineExercise(index, { restBetweenSets: next })}
+                            min={0}
                             className="tap-target"
                           />
                         </div>
@@ -356,11 +356,10 @@ export default function RoutineForm() {
         {/* Rest between exercises */}
         <div>
           <label className="text-sm font-medium mb-2 block">Rest Between Exercises (sec)</label>
-          <Input
-            type="number"
-            inputMode="numeric"
+          <NumberInput
             value={restBetweenExercises}
-            onChange={(e) => setRestBetweenExercises(parseInt(e.target.value) || 60)}
+            onValueChange={setRestBetweenExercises}
+            min={0}
             className="tap-target"
           />
         </div>
@@ -467,7 +466,7 @@ export default function RoutineForm() {
               {/* Filter Modal */}
               {showFilters && (
                 <div
-                  className="absolute inset-0 bg-background z-10 flex flex-col rounded-t-3xl overflow-hidden"
+                  className="fixed inset-0 bg-background z-[60] flex flex-col overflow-hidden safe-top safe-bottom"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Filter Modal Header */}

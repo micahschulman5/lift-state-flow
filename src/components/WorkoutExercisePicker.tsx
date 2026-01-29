@@ -171,7 +171,7 @@ export function WorkoutExercisePicker({
           {/* Filter Modal */}
           {showFilters && (
             <div
-              className="absolute inset-0 bg-background z-10 flex flex-col rounded-t-3xl overflow-hidden"
+               className="fixed inset-0 bg-background z-[60] flex flex-col overflow-hidden safe-top safe-bottom"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Filter Modal Header */}
