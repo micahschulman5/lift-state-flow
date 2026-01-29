@@ -77,6 +77,14 @@ export default function History() {
     setSelectedSession(session);
   };
 
+  // Refresh exercise history when needed
+  const refreshExerciseHistory = async () => {
+    if (selectedExercise) {
+      const entries = await getByExercise(selectedExercise);
+      setExerciseHistory(entries.sort((a, b) => a.completedAt - b.completedAt));
+    }
+  };
+
   // Handle update set
   const handleUpdateSet = async (entry: SetEntry) => {
     await updateSetEntry(entry);
@@ -84,7 +92,10 @@ export default function History() {
     const sets = await getBySession(entry.sessionId);
     setSelectedSessionSets(sets);
     // Refresh all entries for charts
-    getAll().then(setAllEntries);
+    const allUpdated = await getAll();
+    setAllEntries(allUpdated);
+    // Refresh exercise history chart if viewing this exercise
+    await refreshExerciseHistory();
   };
 
   // Handle delete set
@@ -96,15 +107,22 @@ export default function History() {
       setSelectedSessionSets(sets);
     }
     // Refresh all entries
-    getAll().then(setAllEntries);
+    const allUpdated = await getAll();
+    setAllEntries(allUpdated);
+    // Refresh exercise history chart
+    await refreshExerciseHistory();
   };
 
   // Handle delete session
   const handleDeleteSession = async (sessionId: string) => {
     await deleteSession(sessionId);
+    await refreshSessions();
     setSelectedSession(null);
     // Refresh all entries
-    getAll().then(setAllEntries);
+    const allUpdated = await getAll();
+    setAllEntries(allUpdated);
+    // Refresh exercise history chart
+    await refreshExerciseHistory();
   };
 
   // Calculate weekly muscle volume
@@ -188,7 +206,7 @@ export default function History() {
   };
 
   const exportCSV = () => {
-    const headers = ['Date', 'Exercise', 'Set', 'Weight (kg)', 'Reps', 'Duration (sec)', 'RPE', 'Notes'];
+    const headers = ['Date', 'Exercise', 'Set', `Weight (${settings.weightUnit})`, 'Reps', 'Duration (sec)', 'RPE', 'Notes'];
     
     const rows = allEntries
       .sort((a, b) => b.completedAt - a.completedAt)
@@ -269,7 +287,7 @@ export default function History() {
                   >
                     <div className="flex justify-between text-sm">
                       <span className="capitalize">{muscle}</span>
-                      <span className="text-muted-foreground">{volume.toLocaleString()} kg</span>
+                      <span className="text-muted-foreground">{volume.toLocaleString()} {settings.weightUnit}</span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <motion.div
@@ -368,7 +386,7 @@ export default function History() {
               
               <div className="flex items-center justify-center gap-2 mt-2 text-sm text-muted-foreground">
                 <TrendingUp className="w-4 h-4" />
-                <span>Weight over time</span>
+                <span>Weight ({settings.weightUnit}) over time</span>
               </div>
             </div>
           ) : selectedExercise ? (
