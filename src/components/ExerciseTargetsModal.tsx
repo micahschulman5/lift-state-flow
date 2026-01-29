@@ -24,7 +24,10 @@ export function ExerciseTargetsModal({
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(10);
   const [duration, setDuration] = useState(30);
-  const [rest, setRest] = useState(defaultRest);
+  const [rest, setRest] = useState<number | null>(null);
+  
+  // Initialize rest from defaultRest only once when modal opens
+  const effectiveRest = rest ?? defaultRest;
 
   const handleConfirm = () => {
     if (!exercise) return;
@@ -33,14 +36,14 @@ export function ExerciseTargetsModal({
       sets,
       reps: exercise.type === 'reps' ? reps : undefined,
       duration: exercise.type === 'time' ? duration : undefined,
-      rest,
+      rest: effectiveRest,
     });
 
     // Reset for next exercise
     setSets(3);
     setReps(10);
     setDuration(30);
-    setRest(defaultRest);
+    setRest(null);
   };
 
   if (!isOpen || !exercise) return null;
@@ -131,14 +134,14 @@ export function ExerciseTargetsModal({
               <label className="text-sm text-muted-foreground mb-2 block">Rest Between Sets (seconds)</label>
               <div className="flex items-center justify-between bg-surface rounded-xl p-2">
                 <button
-                  onClick={() => setRest(Math.max(0, rest - 15))}
+                  onClick={() => setRest(Math.max(0, effectiveRest - 15))}
                   className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                 >
                   <Minus className="w-5 h-5" />
                 </button>
-                <span className="text-2xl font-bold">{rest}s</span>
+                <span className="text-2xl font-bold">{effectiveRest}s</span>
                 <button
-                  onClick={() => setRest(rest + 15)}
+                  onClick={() => setRest(effectiveRest + 15)}
                   className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                 >
                   <Plus className="w-5 h-5" />
