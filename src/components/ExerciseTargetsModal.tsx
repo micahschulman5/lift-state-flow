@@ -51,14 +51,14 @@ export function ExerciseTargetsModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60]"
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-card rounded-2xl p-6"
+          className="w-full max-w-sm bg-card rounded-2xl p-6 max-h-[90vh] overflow-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-lg font-semibold mb-1">{exercise.name}</h2>
@@ -147,17 +147,17 @@ export function ExerciseTargetsModal({
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
-            <Button variant="outline" className="flex-1 tap-target" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button className="flex-1 tap-target bg-gradient-primary" onClick={handleConfirm}>
-              <Check className="w-4 h-4 mr-2" />
-              Add
-            </Button>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+          <div className="flex gap-3 mt-6"> 
+            <Button variant="outline" className="flex-1 tap-target" onClick={onClose}>  
+              Cancel  
+            </Button>  
+            <Button className="flex-1 tap-target bg-gradient-primary" onClick={handleConfirm}>  
+              <Check className="w-4 h-4 mr-2" />  
+              Add  
+            </Button>  
+          </div>  
+        </motion.div>  
+      </motion.div>  
+    </AnimatePresence>  
   );
 }
