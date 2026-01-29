@@ -67,6 +67,11 @@ export interface RoutineExercise {
   restBetweenSets: number; // seconds
 }
 
+// WorkoutExercise extends RoutineExercise with runtime info
+export interface WorkoutExercise extends RoutineExercise {
+  addedDuringWorkout?: boolean; // tracks mid-workout additions
+}
+
 export interface Routine {
   id: string;
   name: string;
@@ -113,7 +118,8 @@ export interface WorkoutSession {
 // Active workout state types
 export interface ActiveWorkoutState {
   session: WorkoutSession;
-  routine: Routine;
+  routine?: Routine; // Optional - only for routine-based workouts
+  workoutExercises: WorkoutExercise[]; // Dynamic exercise list
   currentExerciseIndex: number;
   currentSetIndex: number;
   completedSets: SetEntry[];
@@ -121,6 +127,7 @@ export interface ActiveWorkoutState {
   inSetTimerStart?: number;
   isPaused: boolean;
   pausedAt?: number;
+  isFreeWorkout: boolean; // Flag for free workout mode
 }
 
 // Settings
