@@ -194,6 +194,67 @@ export async function getRoutine(id: string): Promise<Routine | undefined> {
   return db.get('routines', id);
 }
 
+export async function saveRoutine(routine: Routine): Promise<void> {
+  const db = await getDB();
+  await db.put('routines', routine);
+}
+
+export async function deleteRoutine(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('routines', id);
+}
+
+// Planned Workout operations
+export async function getAllPlannedWorkouts(): Promise<PlannedWorkout[]> {
+  const db = await getDB();
+  return db.getAll('plannedWorkouts');
+}
+
+export async function getPlannedWorkoutsByMonth(year: number, month: number): Promise<PlannedWorkout[]> {
+  const db = await getDB();
+  const all = await db.getAll('plannedWorkouts');
+  return all.filter(pw => {
+    const date = new Date(pw.scheduledDate);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+}
+
+export async function savePlannedWorkout(planned: PlannedWorkout): Promise<void> {
+  const db = await getDB();
+  await db.put('plannedWorkouts', planned);
+}
+
+export async function deletePlannedWorkout(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('plannedWorkouts', id);
+}
+
+// Session operations
+export async function getAllSessions(): Promise<WorkoutSession[]> {
+  const db = await getDB();
+  return db.getAllFromIndex('sessions', 'by-started');
+}
+
+export async function getSession(id: string): Promise<WorkoutSession | undefined> {
+  const db = await getDB();
+  return db.get('sessions', id);
+}
+
+export async function getActiveSession(): Promise<WorkoutSession | undefined> {
+  const db = await getDB();
+  const all = await db.getAllFromIndex('sessions', 'by-status', 'active');
+  return all[0];
+}
+
+export async function getSessionsByMonth(year: number, month: number): Promise<WorkoutSession[]> {
+  const db = await getDB();
+  const all = await db.getAllFromIndex('sessions', 'by-started');
+  return all.filter(s => {
+    const date = new Date(s.startedAt);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+}
+
 export async function saveSession(session: WorkoutSession): Promise<void> {
   const db = await getDB();
   await db.put('sessions', session);
@@ -237,6 +298,62 @@ export async function getAllSetEntries(): Promise<SetEntry[]> {
 }
 
 // Settings operations
+export async function getSettings(): Promise<AppSettings | undefined> {
+  const db = await getDB();
+  const result = await db.get('settings', 'user-settings');
+  if (result) {
+    // Remove the id field we added for storage
+    const { ...settings } = result as AppSettings & { id?: string };
+    return settings;
+  }
+  return undefined;
+}
+
+export async function saveSettings(settings: AppSettings): Promise<void> {
+  const db = await getDB();
+  // Store with an id key for IndexedDB
+  await db.put('settings', { ...settings, id: 'user-settings' } as AppSettings & { id: string });
+}
+
+// Analytics queries
+export async function getWeeklyMuscleVolume(weekStart: Date): Promise<Record<string, number>> {
+  const db = await getDB();
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  
+  const allEntries = await db.getAll('setEntries');
+  const weekEntries = allEntries.filter(e => 
+    e.completedAt >= weekStart.getTime() && e.completedAt < weekEnd.getTime()
+  );
+  
+  const exercises = await db.getAll('exercises');
+  const exerciseMap = new Map(exercises.map(e => [e.id, e]));
+  
+  const volume: Record<string, number> = {};
+  
+  for (const entry of weekEntries) {
+    const exercise = exerciseMap.get(entry.exerciseId);
+    if (!exercise) continue;
+    
+    const setVolume = (entry.reps || 1) * (entry.weight || 0);
+    
+    for (const muscle of exercise.primaryMuscles) {
+      volume[muscle.muscle] = (volume[muscle.muscle] || 0) + setVolume * muscle.weight;
+    }
+    for (const muscle of exercise.secondaryMuscles) {
+      volume[muscle.muscle] = (volume[muscle.muscle] || 0) + setVolume * muscle.weight;
+    }
+  }
+  
+  return volume;
+}
+
+export async function getExerciseHistory(exerciseId: string): Promise<SetEntry[]> {
+  const db = await getDB();
+  const entries = await db.getAllFromIndex('setEntries', 'by-exercise', exerciseId);
+  return entries.sort((a, b) => a.completedAt - b.completedAt);
+}
+
 export const DEFAULT_SETTINGS: AppSettings = {
   defaultRestBetweenSets: 90,
   defaultRestBetweenExercises: 120,

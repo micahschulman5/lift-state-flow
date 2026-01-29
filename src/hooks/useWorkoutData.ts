@@ -406,12 +406,12 @@ export function useActiveWorkout() {
 
 // Analytics hook
 export function useAnalytics() {
-  const getWeeklyVolume = async (startDate: Date, endDate: Date) => {
-    return db.getWeeklyMuscleVolume(startDate, endDate);
+  const getWeeklyVolume = async (startDate: Date) => {
+    return db.getWeeklyMuscleVolume(startDate);
   };
 
-  const getExerciseHistory = async (exerciseId: string, limit?: number) => {
-    return db.getExerciseHistory(exerciseId, limit);
+  const getExerciseHistory = async (exerciseId: string) => {
+    return db.getExerciseHistory(exerciseId);
   };
 
   return { getWeeklyVolume, getExerciseHistory };
