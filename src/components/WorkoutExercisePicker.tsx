@@ -169,96 +169,83 @@ export function WorkoutExercisePicker({
           )}
 
           {/* Filter Modal */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col rounded-t-3xl"
-                onClick={() => setShowFilters(false)}
-              >
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 20, opacity: 0 }}
-                  className="flex flex-col h-full"
-                  onClick={(e) => e.stopPropagation()}
+          {showFilters && (
+            <div
+              className="absolute inset-0 bg-background z-10 flex flex-col rounded-t-3xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Filter Modal Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h3 className="text-lg font-semibold">Filters</h3>
+                <button onClick={() => setShowFilters(false)} className="tap-target p-2">
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              {/* Filter Content - Scrollable */}
+              <div className="flex-1 overflow-auto p-4 space-y-6">
+                {/* Muscle Group */}
+                <div>
+                  <p className="text-sm font-medium mb-3">Muscle Group <span className="text-muted-foreground font-normal">(multi-select)</span></p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {muscleGroups.map(muscle => (
+                      <button
+                        key={muscle}
+                        onClick={() => toggleMuscleFilter(muscle)}
+                        className={cn(
+                          "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
+                          muscleFilters.includes(muscle)
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-surface text-muted-foreground"
+                        )}
+                      >
+                        {muscle}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Equipment */}
+                <div>
+                  <p className="text-sm font-medium mb-3">Equipment <span className="text-muted-foreground font-normal">(multi-select)</span></p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {equipmentTypes.map(equip => (
+                      <button
+                        key={equip}
+                        onClick={() => toggleEquipmentFilter(equip)}
+                        className={cn(
+                          "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
+                          equipmentFilters.includes(equip)
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-surface text-muted-foreground"
+                        )}
+                      >
+                        {equip}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Actions */}
+              <div className="p-4 border-t border-border flex gap-3 pb-safe">
+                <Button
+                  variant="outline"
+                  className="flex-1 tap-target"
+                  onClick={clearFilters}
+                  disabled={!hasActiveFilters}
                 >
-                  {/* Filter Modal Header */}
-                  <div className="flex items-center justify-between p-4 border-b border-border">
-                    <h3 className="text-lg font-semibold">Filters</h3>
-                    <button onClick={() => setShowFilters(false)} className="tap-target p-2">
-                      <X className="w-5 h-5 text-muted-foreground" />
-                    </button>
-                  </div>
-
-                  {/* Filter Content - Scrollable */}
-                  <div className="flex-1 overflow-auto p-4 space-y-6">
-                    {/* Muscle Group */}
-                    <div>
-                      <p className="text-sm font-medium mb-3">Muscle Group <span className="text-muted-foreground font-normal">(multi-select)</span></p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {muscleGroups.map(muscle => (
-                          <button
-                            key={muscle}
-                            onClick={() => toggleMuscleFilter(muscle)}
-                            className={cn(
-                              "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
-                              muscleFilters.includes(muscle)
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-surface text-muted-foreground"
-                            )}
-                          >
-                            {muscle}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Equipment */}
-                    <div>
-                      <p className="text-sm font-medium mb-3">Equipment <span className="text-muted-foreground font-normal">(multi-select)</span></p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {equipmentTypes.map(equip => (
-                          <button
-                            key={equip}
-                            onClick={() => toggleEquipmentFilter(equip)}
-                            className={cn(
-                              "px-3 py-2.5 rounded-xl text-sm font-medium transition-colors capitalize tap-target",
-                              equipmentFilters.includes(equip)
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-surface text-muted-foreground"
-                            )}
-                          >
-                            {equip}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Filter Actions */}
-                  <div className="p-4 border-t border-border flex gap-3 pb-safe">
-                    <Button
-                      variant="outline"
-                      className="flex-1 tap-target"
-                      onClick={clearFilters}
-                      disabled={!hasActiveFilters}
-                    >
-                      Clear All
-                    </Button>
-                    <Button
-                      className="flex-1 tap-target"
-                      onClick={() => setShowFilters(false)}
-                    >
-                      Apply Filters
-                    </Button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  Clear All
+                </Button>
+                <Button
+                  className="flex-1 tap-target"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Exercise list */}
           <div className="flex-1 overflow-auto px-4">
