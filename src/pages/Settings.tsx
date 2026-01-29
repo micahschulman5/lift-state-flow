@@ -10,9 +10,9 @@ import {
   Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Layout } from '@/components/Layout';
+import { NumberInput } from '@/components/NumberInput';
 import { useSettings } from '@/hooks/useWorkoutData';
 
 export default function Settings() {
@@ -109,11 +109,10 @@ export default function Settings() {
             <label className="text-sm text-muted-foreground mb-2 block">
               Rest between sets (seconds)
             </label>
-            <Input
-              type="number"
-              inputMode="numeric"
+            <NumberInput
               value={settings.defaultRestBetweenSets}
-              onChange={(e) => updateSettings({ defaultRestBetweenSets: parseInt(e.target.value) || 60 })}
+              onValueChange={(next) => updateSettings({ defaultRestBetweenSets: next })}
+              min={0}
               className="tap-target"
             />
           </div>
@@ -122,11 +121,10 @@ export default function Settings() {
             <label className="text-sm text-muted-foreground mb-2 block">
               Rest between exercises (seconds)
             </label>
-            <Input
-              type="number"
-              inputMode="numeric"
+            <NumberInput
               value={settings.defaultRestBetweenExercises}
-              onChange={(e) => updateSettings({ defaultRestBetweenExercises: parseInt(e.target.value) || 120 })}
+              onValueChange={(next) => updateSettings({ defaultRestBetweenExercises: next })}
+              min={0}
               className="tap-target"
             />
           </div>
