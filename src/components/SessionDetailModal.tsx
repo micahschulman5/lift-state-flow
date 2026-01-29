@@ -108,11 +108,11 @@ export function SessionDetailModal({
     }));
   };
 
+  if (!isOpen || !session) return null;
+
   const duration = session.endedAt 
     ? Math.round((session.endedAt - session.startedAt) / 1000 / 60)
     : 0;
-
-  if (!isOpen) return null;
 
   return (
     <>
