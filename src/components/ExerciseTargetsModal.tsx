@@ -32,11 +32,14 @@ export function ExerciseTargetsModal({
   const handleConfirm = () => {
     if (!exercise) return;
     
+    // For cardio exercises, we use 1 set and no reps/duration targets
+    const isCardio = exercise.type === 'cardio';
+    
     onConfirm({
-      sets,
+      sets: isCardio ? 1 : sets,
       reps: exercise.type === 'reps' ? reps : undefined,
       duration: exercise.type === 'time' ? duration : undefined,
-      rest: effectiveRest,
+      rest: isCardio ? 0 : effectiveRest,
     });
 
     // Reset for next exercise
@@ -65,90 +68,103 @@ export function ExerciseTargetsModal({
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-lg font-semibold mb-1">{exercise.name}</h2>
-          <p className="text-sm text-muted-foreground mb-6">Set targets for this exercise</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            {exercise.type === 'cardio' 
+              ? 'Ready to start cardio session' 
+              : 'Set targets for this exercise'}
+          </p>
 
-          <div className="space-y-5">
-            {/* Sets */}
-            <div>
-              <label className="text-sm text-muted-foreground mb-2 block">Sets</label>
-              <div className="flex items-center justify-between bg-surface rounded-xl p-2">
-                <button
-                  onClick={() => setSets(Math.max(1, sets - 1))}
-                  className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
-                >
-                  <Minus className="w-5 h-5" />
-                </button>
-                <span className="text-2xl font-bold">{sets}</span>
-                <button
-                  onClick={() => setSets(sets + 1)}
-                  className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
-                >
-                  <Plus className="w-5 h-5" />
-                </button>
-              </div>
+          {exercise.type === 'cardio' ? (
+            // Cardio - no configuration needed, just confirm
+            <div className="text-center py-6">
+              <p className="text-muted-foreground">
+                Track duration, incline, speed, and distance during your session
+              </p>
             </div>
-
-            {/* Reps or Duration */}
-            {exercise.type === 'reps' ? (
+          ) : (
+            <div className="space-y-5">
+              {/* Sets */}
               <div>
-                <label className="text-sm text-muted-foreground mb-2 block">Target Reps</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Sets</label>
                 <div className="flex items-center justify-between bg-surface rounded-xl p-2">
                   <button
-                    onClick={() => setReps(Math.max(1, reps - 1))}
+                    onClick={() => setSets(Math.max(1, sets - 1))}
                     className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
-                  <span className="text-2xl font-bold">{reps}</span>
+                  <span className="text-2xl font-bold">{sets}</span>
                   <button
-                    onClick={() => setReps(reps + 1)}
+                    onClick={() => setSets(sets + 1)}
                     className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
               </div>
-            ) : (
+
+              {/* Reps or Duration */}
+              {exercise.type === 'reps' ? (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Target Reps</label>
+                  <div className="flex items-center justify-between bg-surface rounded-xl p-2">
+                    <button
+                      onClick={() => setReps(Math.max(1, reps - 1))}
+                      className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <span className="text-2xl font-bold">{reps}</span>
+                    <button
+                      onClick={() => setReps(reps + 1)}
+                      className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-2 block">Target Duration (seconds)</label>
+                  <div className="flex items-center justify-between bg-surface rounded-xl p-2">
+                    <button
+                      onClick={() => setDuration(Math.max(5, duration - 5))}
+                      className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <span className="text-2xl font-bold">{duration}s</span>
+                    <button
+                      onClick={() => setDuration(duration + 5)}
+                      className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Rest */}
               <div>
-                <label className="text-sm text-muted-foreground mb-2 block">Target Duration (seconds)</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Rest Between Sets (seconds)</label>
                 <div className="flex items-center justify-between bg-surface rounded-xl p-2">
                   <button
-                    onClick={() => setDuration(Math.max(5, duration - 5))}
+                    onClick={() => setRest(Math.max(0, effectiveRest - 15))}
                     className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
-                  <span className="text-2xl font-bold">{duration}s</span>
+                  <span className="text-2xl font-bold">{effectiveRest}s</span>
                   <button
-                    onClick={() => setDuration(duration + 5)}
+                    onClick={() => setRest(effectiveRest + 15)}
                     className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
               </div>
-            )}
-
-            {/* Rest */}
-            <div>
-              <label className="text-sm text-muted-foreground mb-2 block">Rest Between Sets (seconds)</label>
-              <div className="flex items-center justify-between bg-surface rounded-xl p-2">
-                <button
-                  onClick={() => setRest(Math.max(0, effectiveRest - 15))}
-                  className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
-                >
-                  <Minus className="w-5 h-5" />
-                </button>
-                <span className="text-2xl font-bold">{effectiveRest}s</span>
-                <button
-                  onClick={() => setRest(effectiveRest + 15)}
-                  className="tap-target w-12 h-12 rounded-lg bg-card flex items-center justify-center"
-                >
-                  <Plus className="w-5 h-5" />
-                </button>
-              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex gap-3 mt-6"> 
             <Button variant="outline" className="flex-1 tap-target" onClick={onClose}>  

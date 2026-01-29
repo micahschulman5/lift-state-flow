@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Trash2, Save, Edit2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NumberInput } from '@/components/NumberInput';
-import { WorkoutSession, SetEntry, Exercise } from '@/types/workout';
+import { WorkoutSession, SetEntry, Exercise, AppSettings } from '@/types/workout';
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -20,6 +20,7 @@ interface SessionDetailModalProps {
   sessionSets: SetEntry[];
   exercises: Exercise[];
   routineName?: string;
+  settings: AppSettings;
   isOpen: boolean;
   onClose: () => void;
   onUpdateSet: (entry: SetEntry) => Promise<void>;
@@ -32,6 +33,7 @@ export function SessionDetailModal({
   sessionSets,
   exercises,
   routineName,
+  settings,
   isOpen,
   onClose,
   onUpdateSet,
@@ -58,6 +60,17 @@ export function SessionDetailModal({
 
   const getExerciseType = (exerciseId: string) => {
     return exercises.find(e => e.id === exerciseId)?.type || 'reps';
+  };
+
+  const formatDuration = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const handleEditSet = (set: SetEntry) => {
@@ -199,7 +212,7 @@ export function SessionDetailModal({
                                   />
                                 </div>
                                 <div>
-                                  <label className="text-xs text-muted-foreground">Weight (kg)</label>
+                                  <label className="text-xs text-muted-foreground">Weight ({settings.weightUnit})</label>
                                   <NumberInput
                                     value={editData.weight ?? 0}
                                     onValueChange={(v) => updateEditedSet(set.id, 'weight', v)}
@@ -229,8 +242,21 @@ export function SessionDetailModal({
                             </span>
                             {exerciseType === 'reps' ? (
                               <span className="font-semibold">
-                                {set.reps} reps × {set.weight || 0} kg
+                                {set.reps} reps × {set.weight || 0} {settings.weightUnit}
                               </span>
+                            ) : exerciseType === 'cardio' ? (
+                              <div className="flex flex-col">
+                                <span className="font-semibold">
+                                  {set.duration ? formatDuration(set.duration) : '—'}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {[
+                                    set.distance && `${set.distance} ${settings.distanceUnit}`,
+                                    set.speed && `${set.speed} ${settings.distanceUnit === 'miles' ? 'mph' : 'kph'}`,
+                                    set.incline && `${set.incline}% incline`,
+                                  ].filter(Boolean).join(' • ')}
+                                </span>
+                              </div>
                             ) : (
                               <span className="font-semibold">
                                 {set.duration} sec

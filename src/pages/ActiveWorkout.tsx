@@ -23,9 +23,10 @@ import { QuickExerciseForm } from '@/components/QuickExerciseForm';
 import { ExerciseInfoModal } from '@/components/ExerciseInfoModal';
 import { ExerciseTargetsModal } from '@/components/ExerciseTargetsModal';
 import { SaveAsRoutineModal } from '@/components/SaveAsRoutineModal';
+import { CardioWorkoutView } from '@/components/CardioWorkoutView';
 import * as db from '@/lib/db';
 
-type WorkoutPhase = 'exercise' | 'rest' | 'complete' | 'empty';
+type WorkoutPhase = 'exercise' | 'rest' | 'complete' | 'empty' | 'cardio';
 
 export default function ActiveWorkout() {
   const navigate = useNavigate();
@@ -69,14 +70,19 @@ export default function ActiveWorkout() {
     ? exercises.find(e => e.id === currentWorkoutExercise.exerciseId)
     : null;
 
-  // Check if this is a free workout with no exercises
+  // Check if this is a free workout with no exercises or cardio exercise
   useEffect(() => {
     if (activeWorkout && activeWorkout.workoutExercises.length === 0 && phase !== 'complete') {
       setPhase('empty');
     } else if (activeWorkout && activeWorkout.workoutExercises.length > 0 && phase === 'empty') {
-      setPhase('exercise');
+      // Check if current exercise is cardio
+      if (currentExercise?.type === 'cardio') {
+        setPhase('cardio');
+      } else {
+        setPhase('exercise');
+      }
     }
-  }, [activeWorkout?.workoutExercises.length, phase]);
+  }, [activeWorkout?.workoutExercises.length, phase, currentExercise?.type]);
   
   // Load last set data for auto-fill
   useEffect(() => {
@@ -304,13 +310,46 @@ export default function ActiveWorkout() {
     
     addExerciseToWorkout(selectedExerciseForAdd.id, targets);
     
-    // If this was the first exercise in a free workout, move to exercise phase
+    // If this was the first exercise in a free workout, move to appropriate phase
     if (phase === 'empty') {
-      setPhase('exercise');
+      if (selectedExerciseForAdd.type === 'cardio') {
+        setPhase('cardio');
+      } else {
+        setPhase('exercise');
+      }
     }
     
     setShowTargetsModal(false);
     setSelectedExerciseForAdd(null);
+  };
+
+  // Handle cardio completion
+  const handleCardioComplete = async (entry: Omit<SetEntry, 'id' | 'completedAt'>) => {
+    if (!activeWorkout) return;
+    
+    await completeSet(entry);
+    
+    // Check if there are more exercises
+    const isLastExercise = activeWorkout.currentExerciseIndex >= activeWorkout.workoutExercises.length - 1;
+    
+    if (isLastExercise) {
+      setPhase('complete');
+    } else {
+      update({
+        currentExerciseIndex: activeWorkout.currentExerciseIndex + 1,
+        currentSetIndex: 0,
+      });
+      // Check next exercise type
+      const nextExerciseId = activeWorkout.workoutExercises[activeWorkout.currentExerciseIndex + 1]?.exerciseId;
+      const nextExercise = exercises.find(e => e.id === nextExerciseId);
+      if (nextExercise?.type === 'cardio') {
+        setPhase('cardio');
+      } else {
+        const restTime = activeWorkout.routine?.restBetweenExercises || settings.defaultRestBetweenExercises;
+        setRestTimeLeft(restTime);
+        setPhase('rest');
+      }
+    }
   };
 
   // Handle saving free workout as routine
@@ -598,6 +637,16 @@ export default function ActiveWorkout() {
                 </Button>
               </div>
             </motion.div>
+          ) : phase === 'cardio' && currentExercise ? (
+            // Cardio phase
+            <CardioWorkoutView
+              key="cardio"
+              exercise={currentExercise}
+              sessionId={activeWorkout.session.id}
+              settings={settings}
+              onComplete={handleCardioComplete}
+              onSkip={handleSkipExercise}
+            />
           ) : (
             // Exercise phase
             <motion.div
@@ -636,7 +685,7 @@ export default function ActiveWorkout() {
                 <div className="bg-surface rounded-xl p-3 mb-6">
                   <p className="text-xs text-muted-foreground mb-1">Previous</p>
                   <p className="text-sm">
-                    {lastSetData.weight && `${lastSetData.weight}kg × `}
+                    {lastSetData.weight && `${lastSetData.weight} ${settings.weightUnit} × `}
                     {lastSetData.reps && `${lastSetData.reps} reps`}
                     {lastSetData.duration && formatTime(lastSetData.duration)}
                     {lastSetData.rpe && ` @ RPE ${lastSetData.rpe}`}
@@ -704,7 +753,7 @@ export default function ActiveWorkout() {
                   )}
                   
                   <div>
-                    <label className="text-sm text-muted-foreground mb-1 block">Weight (kg)</label>
+                    <label className="text-sm text-muted-foreground mb-1 block">Weight ({settings.weightUnit})</label>
                     <Input
                       type="number"
                       inputMode="decimal"

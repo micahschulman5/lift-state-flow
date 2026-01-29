@@ -1,6 +1,9 @@
 // Core data types for the workout app
 
-export type ExerciseType = 'reps' | 'time';
+export type ExerciseType = 'reps' | 'time' | 'cardio';
+
+export type WeightUnit = 'lbs' | 'kgs';
+export type DistanceUnit = 'miles' | 'km';
 
 export type EquipmentType = 
   | 'barbell' 
@@ -100,6 +103,10 @@ export interface SetEntry {
   reps?: number;
   duration?: number; // seconds
   weight?: number;
+  // Cardio-specific fields
+  incline?: number; // percentage
+  speed?: number; // mph or kph depending on settings
+  distance?: number; // miles or km depending on settings
   rpe?: number; // 1-10
   notes?: string;
   completedAt: number;
@@ -137,6 +144,8 @@ export interface AppSettings {
   soundEnabled: boolean;
   vibrationEnabled: boolean;
   notificationsEnabled: boolean;
+  weightUnit: WeightUnit;
+  distanceUnit: DistanceUnit;
 }
 
 // Database schema version

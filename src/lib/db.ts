@@ -89,7 +89,15 @@ const DEFAULT_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'updatedAt'>[] = [
   { name: "Hanging Leg Raise", type: "reps", equipment: "bodyweight", primaryMuscles: [{ muscle: "core", weight: 0.85 }], secondaryMuscles: [{ muscle: "forearms", weight: 0.15 }], movementPatterns: ["hinge"] },
   { name: "Russian Twist", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "core", weight: 0.85 }], secondaryMuscles: [{ muscle: "shoulders", weight: 0.15 }], movementPatterns: ["rotation"] },
   { name: "Jump Rope", type: "time", equipment: "other", primaryMuscles: [{ muscle: "cardio", weight: 0.70 }], secondaryMuscles: [ { muscle: "calves", weight: 0.20 }, { muscle: "core", weight: 0.10 } ], movementPatterns: ["carry"] },
-  { name: "Burpees", type: "reps", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.50 }], secondaryMuscles: [ { muscle: "quads", weight: 0.20 }, { muscle: "chest", weight: 0.15 }, { muscle: "core", weight: 0.15 } ], movementPatterns: ["rotation"] }
+  { name: "Burpees", type: "reps", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.50 }], secondaryMuscles: [ { muscle: "quads", weight: 0.20 }, { muscle: "chest", weight: 0.15 }, { muscle: "core", weight: 0.15 } ], movementPatterns: ["rotation"] },
+  // Cardio exercises
+  { name: "Treadmill", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.80 }], secondaryMuscles: [ { muscle: "quads", weight: 0.10 }, { muscle: "calves", weight: 0.10 } ], movementPatterns: ["carry"] },
+  { name: "Stationary Bike", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.75 }], secondaryMuscles: [ { muscle: "quads", weight: 0.15 }, { muscle: "hamstrings", weight: 0.10 } ], movementPatterns: ["carry"] },
+  { name: "Elliptical", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.70 }], secondaryMuscles: [ { muscle: "quads", weight: 0.15 }, { muscle: "glutes", weight: 0.15 } ], movementPatterns: ["carry"] },
+  { name: "Rowing Machine", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.60 }], secondaryMuscles: [ { muscle: "back", weight: 0.25 }, { muscle: "biceps", weight: 0.15 } ], movementPatterns: ["pull"] },
+  { name: "Stair Climber", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.70 }], secondaryMuscles: [ { muscle: "glutes", weight: 0.20 }, { muscle: "quads", weight: 0.10 } ], movementPatterns: ["carry"] },
+  { name: "Outdoor Run", type: "cardio", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.85 }], secondaryMuscles: [ { muscle: "quads", weight: 0.10 }, { muscle: "calves", weight: 0.05 } ], movementPatterns: ["carry"] },
+  { name: "Walking", type: "cardio", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.60 }], secondaryMuscles: [ { muscle: "quads", weight: 0.25 }, { muscle: "glutes", weight: 0.15 } ], movementPatterns: ["carry"] },
 ];
 
 export async function getDB(): Promise<IDBPDatabase<IronFlowDB>> {
@@ -360,4 +368,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   soundEnabled: true,
   vibrationEnabled: true,
   notificationsEnabled: true,
+  weightUnit: 'lbs',
+  distanceUnit: 'miles',
 };
