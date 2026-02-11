@@ -84,9 +84,11 @@ export default function ActiveWorkout() {
     }
   }, [activeWorkout?.workoutExercises.length, phase, currentExercise?.type]);
   
-  // Load last set data for auto-fill
+  // Load last set data for auto-fill only when exercise changes (not between sets)
+  const prevExerciseIdRef = useRef<string | null>(null);
   useEffect(() => {
-    if (currentExercise) {
+    if (currentExercise && currentExercise.id !== prevExerciseIdRef.current) {
+      prevExerciseIdRef.current = currentExercise.id;
       getLastSet(currentExercise.id).then(lastSet => {
         setLastSetData(lastSet || null);
         if (lastSet) {
@@ -102,7 +104,7 @@ export default function ActiveWorkout() {
         }
       });
     }
-  }, [currentExercise, getLastSet, activeWorkout?.currentSetIndex]);
+  }, [currentExercise, getLastSet]);
 
   // Rest timer
   useEffect(() => {
