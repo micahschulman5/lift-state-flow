@@ -235,49 +235,56 @@ export function SessionDetailModal({
                           </div>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <span className="text-sm font-medium text-muted-foreground w-12">
-                              Set {set.setIndex + 1}
-                            </span>
-                            {exerciseType === 'reps' ? (
-                              <span className="font-semibold">
-                                {set.reps} reps × {set.weight || 0} {settings.weightUnit}
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <span className="text-sm font-medium text-muted-foreground w-12">
+                                Set {set.setIndex + 1}
                               </span>
-                            ) : exerciseType === 'cardio' ? (
-                              <div className="flex flex-col">
+                              {exerciseType === 'reps' ? (
                                 <span className="font-semibold">
-                                  {set.duration ? formatDuration(set.duration) : '—'}
+                                  {set.reps} reps × {set.weight || 0} {settings.weightUnit}
                                 </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {[
-                                    set.distance && `${set.distance} ${settings.distanceUnit}`,
-                                    set.speed && `${set.speed} ${settings.distanceUnit === 'miles' ? 'mph' : 'kph'}`,
-                                    set.incline && `${set.incline}% incline`,
-                                  ].filter(Boolean).join(' • ')}
+                              ) : exerciseType === 'cardio' ? (
+                                <div className="flex flex-col">
+                                  <span className="font-semibold">
+                                    {set.duration ? formatDuration(set.duration) : '—'}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {[
+                                      set.distance && `${set.distance} ${settings.distanceUnit}`,
+                                      set.speed && `${set.speed} ${settings.distanceUnit === 'miles' ? 'mph' : 'kph'}`,
+                                      set.incline && `${set.incline}% incline`,
+                                    ].filter(Boolean).join(' • ')}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="font-semibold">
+                                  {set.duration} sec
                                 </span>
-                              </div>
-                            ) : (
-                              <span className="font-semibold">
-                                {set.duration} sec
-                              </span>
-                            )}
+                              )}
+                            </div>
+                            
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleEditSet(set)}
+                                className="tap-target p-2 rounded-lg hover:bg-muted"
+                              >
+                                <Edit2 className="w-4 h-4 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSetClick(set.id)}
+                                className="tap-target p-2 rounded-lg hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </button>
+                            </div>
                           </div>
-                          
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => handleEditSet(set)}
-                              className="tap-target p-2 rounded-lg hover:bg-muted"
-                            >
-                              <Edit2 className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSetClick(set.id)}
-                              className="tap-target p-2 rounded-lg hover:bg-destructive/10"
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </button>
-                          </div>
+                          {set.notes && (
+                            <p className="text-xs text-muted-foreground mt-1 ml-16 italic">
+                              {set.notes}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
