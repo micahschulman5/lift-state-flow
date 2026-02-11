@@ -207,8 +207,13 @@ export default function ActiveWorkout() {
     const isLastExercise = activeWorkout.currentExerciseIndex >= activeWorkout.workoutExercises.length - 1;
     
     if (isLastSet && isLastExercise) {
-      // Workout complete!
-      setPhase('complete');
+      if (activeWorkout.isFreeWorkout) {
+        // Free workout: let user add more exercises or finish
+        setPhase('empty');
+      } else {
+        // Routine workout: auto-complete
+        setPhase('complete');
+      }
     } else if (isLastSet) {
       // Move to next exercise
       update({
@@ -236,7 +241,11 @@ export default function ActiveWorkout() {
     const isLastExercise = activeWorkout.currentExerciseIndex >= activeWorkout.workoutExercises.length - 1;
     
     if (isLastSet && isLastExercise) {
-      setPhase('complete');
+      if (activeWorkout.isFreeWorkout) {
+        setPhase('empty');
+      } else {
+        setPhase('complete');
+      }
     } else if (isLastSet) {
       update({
         currentExerciseIndex: activeWorkout.currentExerciseIndex + 1,
@@ -255,7 +264,11 @@ export default function ActiveWorkout() {
     const isLastExercise = activeWorkout.currentExerciseIndex >= activeWorkout.workoutExercises.length - 1;
     
     if (isLastExercise) {
-      setPhase('complete');
+      if (activeWorkout.isFreeWorkout) {
+        setPhase('empty');
+      } else {
+        setPhase('complete');
+      }
     } else {
       update({
         currentExerciseIndex: activeWorkout.currentExerciseIndex + 1,
@@ -335,7 +348,11 @@ export default function ActiveWorkout() {
     const isLastExercise = activeWorkout.currentExerciseIndex >= activeWorkout.workoutExercises.length - 1;
     
     if (isLastExercise) {
-      setPhase('complete');
+      if (activeWorkout.isFreeWorkout) {
+        setPhase('empty');
+      } else {
+        setPhase('complete');
+      }
     } else {
       update({
         currentExerciseIndex: activeWorkout.currentExerciseIndex + 1,
@@ -483,21 +500,47 @@ export default function ActiveWorkout() {
         
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <div className="text-center mb-8">
-            <Plus className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Add Your First Exercise</h2>
-            <p className="text-muted-foreground">
-              Choose from your library or create a new one
-            </p>
+            {activeWorkout.completedSets.length > 0 ? (
+              <>
+                <Check className="w-16 h-16 text-success mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Exercise Complete!</h2>
+                <p className="text-muted-foreground">
+                  Add another exercise or finish your workout
+                </p>
+              </>
+            ) : (
+              <>
+                <Plus className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Add Your First Exercise</h2>
+                <p className="text-muted-foreground">
+                  Choose from your library or create a new one
+                </p>
+              </>
+            )}
           </div>
           
-          <Button
-            size="lg"
-            className="tap-target bg-gradient-primary"
-            onClick={() => setShowExercisePicker(true)}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Exercise
-          </Button>
+          <div className="w-full max-w-xs space-y-3">
+            <Button
+              size="lg"
+              className="w-full tap-target bg-gradient-primary"
+              onClick={() => setShowExercisePicker(true)}
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add Exercise
+            </Button>
+            
+            {activeWorkout.completedSets.length > 0 && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full tap-target"
+                onClick={() => setPhase('complete')}
+              >
+                <Check className="w-5 h-5 mr-2" />
+                Finish Workout
+              </Button>
+            )}
+          </div>
         </div>
         
         {/* End workout confirmation */}
