@@ -70,12 +70,13 @@ export default function ActiveWorkout() {
     ? exercises.find(e => e.id === currentWorkoutExercise.exerciseId)
     : null;
 
-  // Check if this is a free workout with no exercises or cardio exercise
+  // Check if this is a free workout with no exercises yet (initial state only)
   useEffect(() => {
     if (activeWorkout && activeWorkout.workoutExercises.length === 0 && phase !== 'complete') {
       setPhase('empty');
-    } else if (activeWorkout && activeWorkout.workoutExercises.length > 0 && phase === 'empty') {
-      // Check if current exercise is cardio
+    } else if (activeWorkout && activeWorkout.workoutExercises.length > 0 && phase === 'empty' && activeWorkout.completedSets.length === 0) {
+      // Only auto-switch from empty to exercise if no sets have been completed yet
+      // (i.e., this is the initial add, not returning to empty after finishing an exercise)
       if (currentExercise?.type === 'cardio') {
         setPhase('cardio');
       } else {
@@ -323,10 +324,17 @@ export default function ActiveWorkout() {
   const handleTargetsConfirmed = (targets: { sets: number; reps?: number; duration?: number; rest: number }) => {
     if (!selectedExerciseForAdd || !activeWorkout) return;
     
-    addExerciseToWorkout(selectedExerciseForAdd.id, targets);
+    const result = addExerciseToWorkout(selectedExerciseForAdd.id, targets);
     
-    // If this was the first exercise in a free workout, move to appropriate phase
-    if (phase === 'empty') {
+    // If adding from empty phase, point to the newly added exercise
+    if (phase === 'empty' && result) {
+      const newIndex = result.workoutExercises.length - 1;
+      update({
+        ...result,
+        currentExerciseIndex: newIndex,
+        currentSetIndex: 0,
+      });
+      prevExerciseIdRef.current = null; // Reset so auto-fill triggers for new exercise
       if (selectedExerciseForAdd.type === 'cardio') {
         setPhase('cardio');
       } else {
