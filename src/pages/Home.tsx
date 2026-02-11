@@ -105,9 +105,9 @@ export default function Home() {
           {/* Decorative animated glow */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.15 }}
+            animate={{ opacity: 0.2 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-primary blur-3xl pointer-events-none"
+            className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-violet-500 blur-3xl pointer-events-none"
           />
         </div>
         
@@ -146,7 +146,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             onClick={() => setShowRoutinePicker(true)}
-            className="w-full bg-card rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
+            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-purple-500/50 transition-colors"
           >
             <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
               <ListChecks className="w-7 h-7 text-primary" />
@@ -163,7 +163,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             onClick={handleStartFreeWorkout}
-            className="w-full bg-card rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
+            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-purple-500/50 transition-colors"
           >
             <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center">
               <Plus className="w-7 h-7 text-success" />
@@ -183,19 +183,19 @@ export default function Home() {
           transition={{ delay: 0.2 }}
           className="grid grid-cols-3 gap-3"
         >
-          <div className="bg-card rounded-2xl p-4">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-4">
             <Dumbbell className="w-5 h-5 text-primary mb-2" />
             <p className="display-md">{thisWeekSessions.length}</p>
             <p className="text-xs text-muted-foreground">This week</p>
           </div>
           
-          <div className="bg-card rounded-2xl p-4">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-4">
             <ListChecks className="w-5 h-5 text-primary mb-2" />
             <p className="display-md">{routines.length}</p>
             <p className="text-xs text-muted-foreground">Routines</p>
           </div>
           
-          <div className="bg-card rounded-2xl p-4">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-4">
             <Clock className="w-5 h-5 text-primary mb-2" />
             <p className="display-md">{sessions.filter(s => s.status === 'completed').length}</p>
             <p className="text-xs text-muted-foreground">Total</p>
@@ -227,7 +227,7 @@ export default function Home() {
                 return (
                   <div
                     key={session.id}
-                    className="bg-card rounded-xl p-3 flex items-center justify-between"
+                    className="bg-card/60 backdrop-blur-sm rounded-xl p-3 flex items-center justify-between"
                   >
                     <div>
                       <p className="font-medium">{routine?.name || 'Free Workout'}</p>
@@ -252,7 +252,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="bg-card border-2 border-dashed border-border rounded-2xl p-6 text-center"
+            className="bg-card/60 backdrop-blur-sm border-2 border-dashed border-border rounded-2xl p-6 text-center"
           >
             <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="font-medium mb-1">No routines yet</p>
