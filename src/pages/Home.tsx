@@ -75,7 +75,7 @@ export default function Home() {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-              className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[var(--shadow-glow)]"
+              className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_hsl(265_70%_60%/0.4)]"
             >
               <Zap className="w-6 h-6 text-primary-foreground fill-current" />
             </motion.div>
@@ -86,7 +86,7 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-3xl font-bold"
               >
-                <span className="bg-clip-text text-transparent bg-[image:var(--gradient-primary)]">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
                   Flow
                 </span>{' '}
                 <span>State</span>
