@@ -6,7 +6,8 @@ import {
   Plus, 
   Clock,
   Dumbbell,
-  ListChecks
+  ListChecks,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
@@ -67,12 +68,47 @@ export default function Home() {
   return (
     <Layout>
       <div className="p-4 space-y-6 safe-top">
-        {/* Header */}
-        <div className="pt-2">
-          <h1 className="text-3xl font-bold">Iron Flow</h1>
-          <p className="text-muted-foreground">
-            {format(new Date(), 'EEEE, MMMM d')}
-          </p>
+        {/* Animated Welcome Header */}
+        <div className="pt-2 relative overflow-hidden">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+              className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[var(--shadow-glow)]"
+            >
+              <Zap className="w-6 h-6 text-primary-foreground fill-current" />
+            </motion.div>
+            <div>
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="text-3xl font-bold"
+              >
+                <span className="bg-clip-text text-transparent bg-[image:var(--gradient-primary)]">
+                  Flow
+                </span>{' '}
+                <span>State</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.35, duration: 0.4 }}
+                className="text-muted-foreground"
+              >
+                {format(new Date(), 'EEEE, MMMM d')}
+              </motion.p>
+            </div>
+          </div>
+          
+          {/* Decorative animated glow */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.15 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-primary blur-3xl pointer-events-none"
+          />
         </div>
         
         {/* Today's planned workout */}

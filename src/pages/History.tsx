@@ -200,7 +200,7 @@ export default function History() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ironflow-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
+    a.download = `flowstate-export-${format(new Date(), 'yyyy-MM-dd')}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -229,7 +229,7 @@ export default function History() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ironflow-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.download = `flowstate-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

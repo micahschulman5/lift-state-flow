@@ -328,7 +328,7 @@ export default function Settings() {
           </div>
           
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p><strong className="text-foreground">Iron Flow</strong> - Workout Tracker</p>
+            <p><strong className="text-foreground">Flow State</strong> - Workout Tracker</p>
             <p>Version 1.0.0</p>
             <p>All data is stored locally on your device. No accounts, no cloud sync, no tracking.</p>
           </div>
