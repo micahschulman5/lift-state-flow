@@ -114,7 +114,7 @@ export default function Exercises() {
           <Button
             size="sm"
             onClick={() => navigate('/exercises/new')}
-            className="tap-target"
+            className="tap-target bg-foreground text-background hover:bg-foreground/90 font-semibold"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add
