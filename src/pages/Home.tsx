@@ -202,12 +202,77 @@ export default function Home() {
           </div>
         </motion.div>
         
+        {/* My Routines section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">My Routines</h2>
+            {routines.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary"
+                onClick={() => navigate('/routines')}
+              >
+                See all
+              </Button>
+            )}
+          </div>
+          
+          {routines.length === 0 && !routinesLoading ? (
+            <div className="bg-card/60 backdrop-blur-sm border-2 border-dashed border-border rounded-2xl p-6 text-center">
+              <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <p className="font-medium mb-1">No routines yet</p>
+              <p className="text-sm text-muted-foreground mb-4">Create a routine to get started faster</p>
+              <Button onClick={() => navigate('/routines/new')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Routine
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {routines.slice(0, 3).map((routine) => (
+                <div
+                  key={routine.id}
+                  className="bg-card/60 backdrop-blur-sm rounded-xl p-3 flex items-center justify-between"
+                >
+                  <div>
+                    <p className="font-medium">{routine.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {routine.exercises.length} exercise{routine.exercises.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-primary"
+                    onClick={() => handleStartRoutine(routine)}
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                  </Button>
+                </div>
+              ))}
+              
+              <button
+                onClick={() => navigate('/routines/new')}
+                className="w-full bg-card/60 backdrop-blur-sm border-2 border-dashed border-border rounded-xl p-3 flex items-center justify-center gap-2 text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors tap-target"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Create New Routine</span>
+              </button>
+            </div>
+          )}
+        </motion.div>
+
         {/* Recent activity */}
         {recentSessions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
+            transition={{ delay: 0.3 }}
           >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold">Recent Activity</h2>
@@ -243,24 +308,6 @@ export default function Home() {
                 );
               })}
             </div>
-          </motion.div>
-        )}
-        
-        {/* Quick access to routines */}
-        {routines.length === 0 && !routinesLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="bg-card/60 backdrop-blur-sm border-2 border-dashed border-border rounded-2xl p-6 text-center"
-          >
-            <Dumbbell className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-medium mb-1">No routines yet</p>
-            <p className="text-sm text-muted-foreground mb-4">Create a routine to get started faster</p>
-            <Button onClick={() => navigate('/routines/new')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Routine
-            </Button>
           </motion.div>
         )}
       </div>
