@@ -73,6 +73,8 @@ export default function ExerciseForm() {
         if (exercise.mediaBlob) {
           setMediaBlob(exercise.mediaBlob);
           setMediaPreview(URL.createObjectURL(exercise.mediaBlob));
+        } else if (exercise.mediaUrl) {
+          setMediaPreview(exercise.mediaUrl);
         }
       }
     }
