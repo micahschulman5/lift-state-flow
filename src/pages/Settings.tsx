@@ -154,11 +154,11 @@ export default function Settings() {
                 <p className="text-sm text-muted-foreground">Display weights in lbs or kgs</p>
               </div>
             </div>
-            <div className="flex bg-muted rounded-lg p-1">
+            <div className="flex bg-muted rounded-lg p-0.5">
               <button
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   settings.weightUnit === 'lbs' 
-                    ? 'bg-primary text-primary-foreground' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => updateSettings({ weightUnit: 'lbs' as WeightUnit })}
@@ -166,9 +166,9 @@ export default function Settings() {
                 lbs
               </button>
               <button
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   settings.weightUnit === 'kgs' 
-                    ? 'bg-primary text-primary-foreground' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => updateSettings({ weightUnit: 'kgs' as WeightUnit })}
@@ -187,11 +187,11 @@ export default function Settings() {
                 <p className="text-sm text-muted-foreground">For cardio exercises</p>
               </div>
             </div>
-            <div className="flex bg-muted rounded-lg p-1">
+            <div className="flex bg-muted rounded-lg p-0.5">
               <button
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   settings.distanceUnit === 'miles' 
-                    ? 'bg-primary text-primary-foreground' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => updateSettings({ distanceUnit: 'miles' as DistanceUnit })}
@@ -199,9 +199,9 @@ export default function Settings() {
                 mi
               </button>
               <button
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   settings.distanceUnit === 'km' 
-                    ? 'bg-primary text-primary-foreground' 
+                    ? 'bg-primary text-primary-foreground shadow-sm' 
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => updateSettings({ distanceUnit: 'km' as DistanceUnit })}
