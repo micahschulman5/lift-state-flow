@@ -75,7 +75,7 @@ export default function Home() {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-              className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_hsl(265_70%_60%/0.4)]"
+              className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center glow-primary"
             >
               <Zap className="w-6 h-6 text-primary-foreground fill-current" />
             </motion.div>
@@ -86,7 +86,7 @@ export default function Home() {
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-3xl font-bold"
               >
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                   Flow
                 </span>{' '}
                 <span>State</span>
@@ -107,7 +107,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.2 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-violet-500 blur-3xl pointer-events-none"
+            className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-primary blur-3xl pointer-events-none"
           />
         </div>
         
@@ -146,7 +146,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             onClick={() => setShowRoutinePicker(true)}
-            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-purple-500/50 transition-colors"
+            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
           >
             <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
               <ListChecks className="w-7 h-7 text-primary" />
@@ -163,7 +163,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             onClick={handleStartFreeWorkout}
-            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-purple-500/50 transition-colors"
+            className="w-full bg-card/60 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-4 tap-target text-left border-2 border-transparent hover:border-primary/50 transition-colors"
           >
             <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center">
               <Plus className="w-7 h-7 text-success" />
