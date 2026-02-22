@@ -380,3 +380,20 @@ export const DEFAULT_SETTINGS: AppSettings = {
   weightUnit: 'lbs',
   distanceUnit: 'miles',
 };
+
+// Reset database: delete and re-open to trigger seeding
+export async function resetDatabase(): Promise<void> {
+  if (dbInstance) {
+    dbInstance.close();
+    dbInstance = null;
+  }
+  // Delete the entire database
+  await new Promise<void>((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+    req.onblocked = () => resolve(); // proceed anyway
+  });
+  // Re-open to trigger the upgrade/seed
+  await getDB();
+}

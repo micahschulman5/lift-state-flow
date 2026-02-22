@@ -9,7 +9,8 @@ import {
   Clock,
   Info,
   Scale,
-  Ruler
+  Ruler,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -17,6 +18,8 @@ import { Layout } from '@/components/Layout';
 import { NumberInput } from '@/components/NumberInput';
 import { useSettings } from '@/hooks/useWorkoutData';
 import { WeightUnit, DistanceUnit } from '@/types/workout';
+import { resetDatabase } from '@/lib/db';
+import { toast } from 'sonner';
 
 export default function Settings() {
   const { settings, loading, updateSettings } = useSettings();
@@ -315,6 +318,44 @@ export default function Settings() {
           </div>
         </motion.div>
         
+        {/* Data Management */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-card rounded-2xl p-4 space-y-4"
+        >
+          <div className="flex items-center gap-3">
+            <RotateCcw className="w-5 h-5 text-primary" />
+            <h2 className="font-semibold">Data Management</h2>
+          </div>
+          
+          <div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Reset the database to restore all default exercises (including media). This will <strong className="text-destructive">delete all your workout history, routines, and custom exercises</strong>.
+            </p>
+            <Button
+              variant="destructive"
+              className="w-full tap-target"
+              onClick={async () => {
+                if (window.confirm('Are you sure? This will delete ALL your data including workout history, routines, and custom exercises.')) {
+                  try {
+                    await resetDatabase();
+                    toast.success('Database reset! Reloading...');
+                    setTimeout(() => window.location.reload(), 1000);
+                  } catch (err) {
+                    console.error('Reset failed:', err);
+                    toast.error('Failed to reset database');
+                  }
+                }
+              }}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset Database
+            </Button>
+          </div>
+        </motion.div>
+
         {/* About */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
