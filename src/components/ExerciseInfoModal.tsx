@@ -20,10 +20,12 @@ export function ExerciseInfoModal({ exercise, isOpen, onClose }: ExerciseInfoMod
       const url = URL.createObjectURL(exercise.mediaBlob);
       setImageUrl(url);
       return () => URL.revokeObjectURL(url);
+    } else if (exercise?.mediaUrl) {
+      setImageUrl(exercise.mediaUrl);
     } else {
       setImageUrl(null);
     }
-  }, [exercise?.mediaBlob]);
+  }, [exercise?.mediaBlob, exercise?.mediaUrl]);
 
   const handleEdit = () => {
     if (exercise) {

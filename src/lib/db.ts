@@ -66,7 +66,7 @@ let dbInstance: IDBPDatabase<IronFlowDB> | null = null;
 
 // Default exercises to seed on first DB creation
 const DEFAULT_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'updatedAt'>[] = [
-  { name: "Barbell Bench Press", type: "reps", equipment: "barbell", primaryMuscles: [ { muscle: "chest", weight: 0.65 }, { muscle: "triceps", weight: 0.25 } ], secondaryMuscles: [{ muscle: "shoulders", weight: 0.10 }], movementPatterns: ["push"] },
+  { name: "Barbell Bench Press", type: "reps", equipment: "barbell", primaryMuscles: [ { muscle: "chest", weight: 0.65 }, { muscle: "triceps", weight: 0.25 } ], secondaryMuscles: [{ muscle: "shoulders", weight: 0.10 }], movementPatterns: ["push"], mediaUrl: "/exercises/bench-press.gif" },
   { name: "Incline Dumbbell Press", type: "reps", equipment: "dumbbell", primaryMuscles: [{ muscle: "chest", weight: 0.60 }], secondaryMuscles: [ { muscle: "shoulders", weight: 0.25 }, { muscle: "triceps", weight: 0.15 } ], movementPatterns: ["push"] },
   { name: "Push-Up", type: "reps", equipment: "bodyweight", primaryMuscles: [{ muscle: "chest", weight: 0.55 }], secondaryMuscles: [ { muscle: "triceps", weight: 0.25 }, { muscle: "shoulders", weight: 0.15 }, { muscle: "core", weight: 0.05 } ], movementPatterns: ["push"] },
   { name: "Pull-Up", type: "reps", equipment: "bodyweight", primaryMuscles: [{ muscle: "back", weight: 0.65 }], secondaryMuscles: [ { muscle: "biceps", weight: 0.20 }, { muscle: "forearms", weight: 0.10 }, { muscle: "core", weight: 0.05 } ], movementPatterns: ["pull"] },
@@ -98,6 +98,15 @@ const DEFAULT_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'updatedAt'>[] = [
   { name: "Stair Climber", type: "cardio", equipment: "machine", primaryMuscles: [{ muscle: "cardio", weight: 0.70 }], secondaryMuscles: [ { muscle: "glutes", weight: 0.20 }, { muscle: "quads", weight: 0.10 } ], movementPatterns: ["carry"] },
   { name: "Outdoor Run", type: "cardio", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.85 }], secondaryMuscles: [ { muscle: "quads", weight: 0.10 }, { muscle: "calves", weight: 0.05 } ], movementPatterns: ["carry"] },
   { name: "Walking", type: "cardio", equipment: "bodyweight", primaryMuscles: [{ muscle: "cardio", weight: 0.60 }], secondaryMuscles: [ { muscle: "quads", weight: 0.25 }, { muscle: "glutes", weight: 0.15 } ], movementPatterns: ["carry"] },
+  // Additional exercises with media
+  { name: "Barbell Preacher Curl", type: "reps", equipment: "barbell", primaryMuscles: [{ muscle: "biceps", weight: 0.90 }], secondaryMuscles: [{ muscle: "forearms", weight: 0.10 }], movementPatterns: ["pull"], mediaUrl: "/exercises/preacher-curl.gif" },
+  { name: "Dumbbell Row", type: "reps", equipment: "dumbbell", primaryMuscles: [{ muscle: "back", weight: 0.70 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }, { muscle: "forearms", weight: 0.10 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-3.gif" },
+  { name: "Workout 1", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-1.webp" },
+  { name: "Workout 2", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-2.webp" },
+  { name: "Workout 3", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-4.webp" },
+  { name: "Workout 4", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-5.webp" },
+  { name: "Workout 5", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-6.webp" },
+  { name: "Workout 6", type: "reps", equipment: "other", primaryMuscles: [{ muscle: "back", weight: 0.80 }], secondaryMuscles: [{ muscle: "biceps", weight: 0.20 }], movementPatterns: ["pull"], mediaUrl: "/exercises/back-workout-7.webp" },
 ];
 
 export async function getDB(): Promise<IDBPDatabase<IronFlowDB>> {
