@@ -12,7 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
 import { usePlannedWorkouts, useRoutines, useSessions } from '@/hooks/useWorkoutData';
-import { PlannedWorkout } from '@/types/workout';
+import { PlannedWorkout, Routine } from '@/types/workout';
+import { RoutinePicker } from '@/components/RoutinePicker';
 import { 
   format, 
   startOfMonth, 
@@ -106,11 +107,11 @@ export default function CalendarPage() {
     return null;
   };
 
-  const handleAddPlannedWorkout = async (routineId: string) => {
+  const handleAddPlannedWorkout = async (routine: Routine) => {
     if (!selectedDate) return;
     
     await addPlannedWorkout({
-      routineId,
+      routineId: routine.id,
       scheduledDate: format(selectedDate, 'yyyy-MM-dd'),
       status: 'planned',
     });
@@ -384,52 +385,12 @@ export default function CalendarPage() {
         </AnimatePresence>
       </div>
       
-      {/* Routine picker modal */}
-      {showRoutinePicker && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-          onClick={() => setShowRoutinePicker(false)}
-        >
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl max-h-[80vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 border-b border-border">
-              <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-4" />
-              <h2 className="text-lg font-semibold">Select Routine</h2>
-            </div>
-            
-            <div className="overflow-auto max-h-[60vh] p-4">
-              {routines.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No routines yet</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {routines.map(routine => (
-                    <button
-                      key={routine.id}
-                      onClick={() => handleAddPlannedWorkout(routine.id)}
-                      className="w-full bg-surface rounded-xl p-4 text-left tap-target"
-                    >
-                      <p className="font-medium">{routine.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {routine.exercises.length} exercises
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+      <RoutinePicker
+        routines={routines}
+        isOpen={showRoutinePicker}
+        onClose={() => setShowRoutinePicker(false)}
+        onSelect={handleAddPlannedWorkout}
+      />
     </Layout>
   );
 }
