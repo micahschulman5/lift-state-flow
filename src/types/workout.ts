@@ -58,6 +58,7 @@ export interface Exercise {
   notes?: string;
   mediaBlob?: Blob;
   mediaType?: 'image' | 'gif';
+  mediaUrl?: string; // URL to a static media file
   createdAt: number;
   updatedAt: number;
 }
